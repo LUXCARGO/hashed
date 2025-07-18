@@ -100,12 +100,21 @@
     button.save:hover {
       background: #0056b3;
     }
+    .delete-btn {
+      cursor: pointer;
+      color: #e74c3c;
+      font-size: 20px;
+      border: none;
+      background: none;
+    }
+    .delete-btn:hover {
+      color: #c0392b;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Сканирование штрихкодов</h2>
-    <!-- Спиннер загрузки -->
     <div id="loader"></div>
 
     <input type="text" id="scannedDisplay" placeholder="Введите или отсканируйте штрихкод...">
@@ -118,6 +127,7 @@
         <tr>
           <th>Штрихкод</th>
           <th>🆔</th>
+          <th>Удалить</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -182,16 +192,30 @@
 
       const tdId = document.createElement("td");
       tdId.contentEditable = "true";
-      tdId.textContent = ""; // 🆔 остаётся пустым
+      tdId.textContent = "";
+
+      const tdDelete = document.createElement("td");
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "❎";
+      delBtn.className = "delete-btn";
+      delBtn.onclick = () => row.remove();
+      tdDelete.appendChild(delBtn);
 
       row.appendChild(tdBarcode);
       row.appendChild(tdId);
+      row.appendChild(tdDelete);
       tableBody.appendChild(row);
     }
 
     function exportToExcel() {
       const table = document.getElementById("barcodeTable");
-      const wb = XLSX.utils.table_to_book(table, {sheet: "Штрихкоды"});
+      // клонируем таблицу, чтобы удалить последний столбец "Удалить"
+      const clone = table.cloneNode(true);
+      for (let row of clone.rows) {
+        row.deleteCell(-1); // удаляем последнюю ячейку (Удалить)
+      }
+
+      const wb = XLSX.utils.table_to_book(clone, { sheet: "Штрихкоды" });
       const date = document.getElementById("datePicker").value;
       const filename = date ? `Дата ${formatDate(date)}.xlsx` : "Штрихкоды.xlsx";
       XLSX.writeFile(wb, filename);
