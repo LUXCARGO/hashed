@@ -218,7 +218,7 @@
 
       // Устанавливаем ширину колонки A в 22 пикселя
       const ws = wb.Sheets["Штрихкоды"];
-      ws['!cols'] = [{ wpx: 271 }];
+      ws['!cols'] = [{ wpx: 260 }];
 
       const date = document.getElementById("datePicker").value;
       const filename = date ? `Дата ${formatDate(date)}.xlsx` : "Штрихкоды.xlsx";
