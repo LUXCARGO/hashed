@@ -209,13 +209,17 @@
 
     function exportToExcel() {
       const table = document.getElementById("barcodeTable");
-      // клонируем таблицу, чтобы удалить последний столбец "Удалить"
       const clone = table.cloneNode(true);
       for (let row of clone.rows) {
-        row.deleteCell(-1); // удаляем последнюю ячейку (Удалить)
+        row.deleteCell(-1); // удаляем последний столбец (Удалить)
       }
 
       const wb = XLSX.utils.table_to_book(clone, { sheet: "Штрихкоды" });
+
+      // Устанавливаем ширину колонки A в 22 пикселя
+      const ws = wb.Sheets["Штрихкоды"];
+      ws['!cols'] = [{ wpx: 271 }];
+
       const date = document.getElementById("datePicker").value;
       const filename = date ? `Дата ${formatDate(date)}.xlsx` : "Штрихкоды.xlsx";
       XLSX.writeFile(wb, filename);
